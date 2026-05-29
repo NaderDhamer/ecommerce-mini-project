@@ -110,6 +110,37 @@ github_repo_url = "https://github.com/YOUR_USER/Ecommerce-mini-project.git"
 
 The repo must be **public**, or use manual `scp` deploy.
 
+## Starting over (full reset)
+
+1. **Destroy AWS** (with fresh Learner Lab credentials):
+   ```bash
+   cd terraform
+   terraform destroy
+   ```
+   Confirm in the EC2 console that no `ecommerce-*` instance remains.
+
+2. **Start a new lab session** → copy new `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, and region.
+
+3. **Recreate key pair** in EC2 console if the lab account was reset (download new `.pem`).
+
+4. **Apply again**:
+   ```bash
+   terraform init
+   terraform apply
+   ```
+   Note the new `public_ip`.
+
+5. **Update GitHub secret** `EC2_HOST` to the new IP (and `EC2_SSH_PRIVATE_KEY` if you created a new key).
+
+6. **Deploy the app** — pick one:
+   - Wait for `github_repo_url` on first boot (~10–20 min), or
+   - **Actions → Deploy to EC2 → Run workflow**, or
+   - `./scripts/deploy-aws.sh -i ~/.ssh/your-key.pem`
+
+7. Open `http://<new-public-ip>/`.
+
+Local Terraform state stays in `terraform/`; you do not need to delete it unless you change AWS accounts.
+
 ## Files
 
 | Path | Purpose |
