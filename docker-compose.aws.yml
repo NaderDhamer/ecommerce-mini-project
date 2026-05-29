@@ -1,0 +1,78 @@
+# Production compose for AWS EC2 (Learner Lab). Exposes only port 80.
+# Usage: docker compose -f docker-compose.aws.yml up -d --build
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.aws.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - nodefrontend
+      - nodebackend
+    networks:
+      - node-exa
+    restart: unless-stopped
+
+  nodefrontend:
+    container_name: nodefrontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        REACT_APP_API_URL: /api
+    networks:
+      - node-exa
+    depends_on:
+      - node-db
+      - nodebackend
+    restart: unless-stopped
+
+  nodebackend:
+    container_name: nodebackend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment:
+      DB_HOST: node-db
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-12345678}
+      DB_NAME: newappec
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost,http://localhost:3000}
+      PORT: "8000"
+    networks:
+      - node-exa
+    depends_on:
+      node-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  node-db:
+    image: mysql:8.0
+    container_name: node-db
+    environment:
+      MYSQL_DATABASE: newappec
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-12345678}
+    volumes:
+      - db:/var/lib/mysql
+      - ./tables.sql:/docker-entrypoint-initdb.d/1-tables.sql
+      - ./seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
+    networks:
+      - node-exa
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    restart: unless-stopped
+
+networks:
+  node-exa:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local

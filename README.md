@@ -50,6 +50,24 @@ We are developing this project at continous rate with many future integration ke
 * [Licensing](#licensing)
 
 
+## Deploy on AWS (Terraform + Learner Lab)
+
+This repo includes infrastructure-as-code to run the app on **AWS EC2** with Docker, compatible with **AWS Academy Learner Lab** (no custom IAM roles).
+
+See **[terraform/README.md](./terraform/README.md)** for credentials, `terraform apply`, and deploy steps.
+
+Quick summary:
+
+1. Export Learner Lab CLI credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`).
+2. Create an EC2 key pair in the lab console.
+3. `cd terraform && cp terraform.tfvars.example terraform.tfvars` → edit `key_name` → `terraform init && terraform apply`.
+4. Deploy the app: `./scripts/deploy-aws.sh -i your-key.pem` or set `github_repo_url` in tfvars.
+5. Open `http://<public_ip>/`.
+
+Production compose: `docker-compose.aws.yml` (port 80 only).
+
+---
+
 ## Prerequisites
 
 If you don't already have an React and Node local environment with NodeJS and MySQL, use one of the following links:
