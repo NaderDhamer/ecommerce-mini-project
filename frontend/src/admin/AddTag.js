@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +20,7 @@ const AddTag = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:8000/tags',
+        `${API_URL}/tags`,
         { name: tagName, slug: tagSlug },
         { headers: { Authorization: token } }
       );

@@ -2,47 +2,54 @@ version: '3.8'
 
 services:
 
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - nodefrontend
+      - nodebackend
+    networks:
+      - node-exa
+
   nodefrontend:
     container_name: nodefrontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
     volumes:
       - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
     networks:
       - node-exa
     depends_on:
-      - node-db
-      - nodebackend
-    links:
       - node-db
       - nodebackend
     command: npm start
     environment:
       - CHOKIDAR_USEPOPOLLING=true
       - WATCHPACK_POLLING=true
+      - REACT_APP_API_URL=/api
 
   nodebackend:
     container_name: nodebackend
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
     volumes:
       - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
-      DB_HOST: node-db  # Set the MySQL host to the service name
+      DB_HOST: node-db
       DB_USER: root
       DB_PASSWORD: "12345678"
-      DB_NAME: newapp
+      DB_NAME: newappec
     networks:
       - node-exa
     depends_on:
-      - node-db
-    links:
       - node-db
     command: npm start
 
@@ -50,10 +57,12 @@ services:
     image: mysql:8.0
     container_name: node-db
     environment:
-      MYSQL_DATABASE: "newapp"
+      MYSQL_DATABASE: "newappec"
       MYSQL_ROOT_PASSWORD: "12345678"
     volumes:
       - db:/var/lib/mysql
+      - ./tables.sql:/docker-entrypoint-initdb.d/1-tables.sql
+      - ./seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
     networks:
       - node-exa
 

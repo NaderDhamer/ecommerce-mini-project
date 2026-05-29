@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
 CREATE TABLE `tags` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(255) NOT NULL,
@@ -90,5 +92,7 @@ CREATE TABLE payment (
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 

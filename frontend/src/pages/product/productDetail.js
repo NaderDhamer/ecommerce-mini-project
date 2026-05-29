@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
@@ -34,15 +35,15 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/products/${id}`);
+        const response = await axios.get(`${API_URL}/products/${id}`);
         setProduct(response.data);
 
         // Fetch tag details
-        const tagResponse = await axios.get(`http://localhost:8000/tags/${response.data.tag_id}`);
+        const tagResponse = await axios.get(`${API_URL}/tags/${response.data.tag_id}`);
         setTag(tagResponse.data);
 
         // Fetch category details
-        const categoryResponse = await axios.get(`http://localhost:8000/categories/${response.data.category_id}`);
+        const categoryResponse = await axios.get(`${API_URL}/categories/${response.data.category_id}`);
         setCategory(categoryResponse.data);
       } catch (error) {
         console.error('Error fetching product:', error);
@@ -66,7 +67,7 @@ const ProductDetail = () => {
       };
   
       // Make a POST request to add the product to the cart
-      const response = await axios.post('http://localhost:8000/addtocart', data, {
+      const response = await axios.post(`${API_URL}/addtocart`, data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: token
@@ -132,7 +133,7 @@ const ProductDetail = () => {
         <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8 sm:grid-cols-1">
           <div className="aspect-h-4 aspect-w-3 overflow-hidden rounded-lg lg:block">
           <img
-  src={'http://localhost:8000' + product.image}
+  src={`${API_URL}` + product.image}
   alt={product.name}
   className="h-full w-full object-cover object-center"
 />

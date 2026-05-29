@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import { useEffect, useRef } from 'react';
 import crypto from 'crypto-js';
 import PropTypes from 'prop-types';
@@ -59,7 +60,7 @@ const RenderRazorpay = ({
 
   // informing server about payment
   const handlePayment = async (status, orderDetails = {}) => {
-    await Axios.post(`http://localhost:8000/payment`,
+    await Axios.post(`${API_URL}/payment`,
       {
         status,
         orderDetails,

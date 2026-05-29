@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +27,7 @@ const AddProduct = () => {
       setToken(storedToken);
     }
     // Fetch categories
-    axios.get('http://localhost:8000/categories', { headers: { Authorization: storedToken } })
+    axios.get(`${API_URL}/categories`, { headers: { Authorization: storedToken } })
       .then(response => {
         setCategories(response.data);
       })
@@ -35,7 +36,7 @@ const AddProduct = () => {
       });
    
     // Fetch tags
-    axios.get('http://localhost:8000/tags', { headers: { Authorization: storedToken } })
+    axios.get(`${API_URL}/tags`, { headers: { Authorization: storedToken } })
       .then(response => {
         setTags(response.data);
       })
@@ -44,7 +45,7 @@ const AddProduct = () => {
       });
 
     // Fetch product inventory
-    axios.get('http://localhost:8000/productInventory', { headers: { Authorization: storedToken } })
+    axios.get(`${API_URL}/productInventory`, { headers: { Authorization: storedToken } })
       .then(response => {
         setProductInventory(response.data);
       })
@@ -66,7 +67,7 @@ const AddProduct = () => {
 
       // Upload the image first
       const imageUploadResponse = await axios.post(
-        'http://localhost:8000/upload',
+        `${API_URL}/upload`,
         formData,
         {
           headers: {
@@ -81,7 +82,7 @@ const AddProduct = () => {
 
       // Create product
       const response = await axios.post(
-        'http://localhost:8000/products',
+        `${API_URL}/products`,
         {
           name: productName,
           description: description,

@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -18,7 +19,7 @@ const navigate = useNavigate();
     
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/users/register', formData);
+      const response = await axios.post(`${API_URL}/users/register`, formData);
       console.log(response.data);
      navigate('/login');
       // Optionally, you can redirect the user to another page upon successful registration

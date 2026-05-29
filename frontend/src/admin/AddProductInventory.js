@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +19,7 @@ const AddProductInventory = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:8000/productInventory',
+        `${API_URL}/productInventory`,
         { quantity:quantity },
         { headers: { Authorization: token } }
       );

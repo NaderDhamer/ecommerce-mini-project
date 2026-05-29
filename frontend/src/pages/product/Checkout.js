@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {Link, useNavigate} from 'react-router-dom';
@@ -11,9 +12,9 @@ const Checkout = () => {
   useEffect(() => {
     const fetchUserCart = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/useraddtocart/${userData.id}`);
+        const response = await axios.get(`${API_URL}/useraddtocart/${userData.id}`);
         setUserCart(response.data);
-        const productPromises = response.data.map(item => axios.get(`http://localhost:8000/products/${item.product_id}`));
+        const productPromises = response.data.map(item => axios.get(`${API_URL}/products/${item.product_id}`));
         const productResponses = await Promise.all(productPromises);
         const productsData = productResponses.map(response => response.data);
         setProducts(productsData);
@@ -28,7 +29,7 @@ const Checkout = () => {
     try {
       // Update the quantity in the user's cart
       const updatedCartItem = { ...userCart, quantity: newQuantity };
-      await axios.put(`http://localhost:8000/useraddtocart/${userCart.id}`, updatedCartItem);
+      await axios.put(`${API_URL}/useraddtocart/${userCart.id}`, updatedCartItem);
       // Update local state with the new quantity
       setQuantity(newQuantity);
     } catch (error) {
@@ -48,7 +49,7 @@ const Checkout = () => {
               <div key={index} className="rounded-lg md:w-2/3">
             <div className="justify-between mb-6 rounded-lg bg-white p-6 shadow-md sm:flex sm:justify-start">
               <img
-                  src={product && `http://localhost:8000/${product.image}`}
+                  src={product && `${API_URL}/${product.image}`}
                   alt={product && product.name}
                   className="w-full rounded-lg sm:w-40"
               />

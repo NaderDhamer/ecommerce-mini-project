@@ -23,7 +23,7 @@ const jwt = require('jsonwebtoken');
 const verifyToken = require('./verifyToken');
 const verifyCustomerToken = require('./verifyCustomerToken');
 app.use(bodyParser.json()); // Parse JSON data from requests
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: ['http://localhost', 'http://localhost:3000'] }));
 app.get('/users', async (req, res) => {
   try {
     const users = await User.getAll();

@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -17,7 +18,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/users/login', formData);
+      const response = await axios.post(`${API_URL}/users/login`, formData);
       console.log(response.data);
       const { id, name, email, user_role } = response.data.user; // Extract user from response
       localStorage.setItem('user', JSON.stringify({ id, name, email, user_role })); 

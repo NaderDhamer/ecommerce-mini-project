@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -6,7 +7,7 @@ const Shop = () => {
 
   useEffect(() => {
     // Fetch products from your API
-    axios.get('http://localhost:8000/products')
+    axios.get(`${API_URL}/products`)
       .then(response => {
         setProducts(response.data);
       })
@@ -24,7 +25,7 @@ const Shop = () => {
   <Link key={product.id} to={`/products/${product.id}`} className="group">
     <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
     <img
-  src={`http://localhost:8000${product.image}`}
+  src={`${API_URL}${product.image}`}
   alt={product.name}
   className="h-full w-full object-cover object-center group-hover:opacity-75"
 />

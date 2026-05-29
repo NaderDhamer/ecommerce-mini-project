@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import RenderRazorpay from './RenderRazorpay.js';
@@ -20,7 +21,7 @@ const [orderDetails, setOrderDetails] = useState({
   const [userId, setUserId] = useState(''); // Assuming userId is available in localStorage
   const [addresses, setAddresses] = useState([]);
   const handleCreateOrder = async (amount, currency) => {
-    const data = await axios.post( 'http://localhost:8000/order',
+    const data = await axios.post( `${API_URL}/order`,
      {
       amount: amount*100, //convert amount into lowest unit. here, Dollar->Cents
       currency,
@@ -55,7 +56,7 @@ const [orderDetails, setOrderDetails] = useState({
 
   const fetchAddresses = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/address/2');
+      const response = await axios.get(`${API_URL}/address/2`);
       setAddresses(response.data);
     } catch (error) {
       console.error('Error fetching addresses:', error);
@@ -65,7 +66,7 @@ const [orderDetails, setOrderDetails] = useState({
     event.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:8000/address',
+        `${API_URL}/address`,
         {
           street_address: streetAddress,
           addressline1: addressLine1,

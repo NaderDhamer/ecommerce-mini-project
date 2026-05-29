@@ -1,3 +1,4 @@
+import { API_URL } from 'config';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +7,7 @@ const CategoriesList = () => {
   const navigate = useNavigate();
   useEffect(() => {
     // Fetch categories from the API
-    axios.get('http://localhost:8000/categories')
+    axios.get(`${API_URL}/categories`)
       .then(response => {
         setCategories(response.data);
       })
