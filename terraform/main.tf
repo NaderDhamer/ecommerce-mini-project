@@ -2,10 +2,15 @@ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnets" "default" {
+data "aws_subnets" "app" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.default.id]
+  }
+
+  filter {
+    name   = "availability-zone"
+    values = [var.availability_zone]
   }
 }
 
@@ -62,7 +67,8 @@ resource "aws_instance" "app" {
   instance_type          = var.instance_type
   key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.app.id]
-  subnet_id              = data.aws_subnets.default.ids[0]
+  subnet_id              = data.aws_subnets.app.ids[0]
+  availability_zone      = var.availability_zone
 
   user_data = templatefile("${path.module}/user_data.sh.tpl", {
     github_repo_url = var.github_repo_url

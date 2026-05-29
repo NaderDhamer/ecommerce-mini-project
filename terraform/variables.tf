@@ -16,6 +16,12 @@ variable "instance_type" {
   default     = "t3.small"
 }
 
+variable "availability_zone" {
+  description = "AZ for the EC2 instance. Avoid us-east-1e — t3.small is not offered there."
+  type        = string
+  default     = "us-east-1a"
+}
+
 variable "key_name" {
   description = "Name of an existing EC2 key pair in this region (create in EC2 console before apply)."
   type        = string
