@@ -109,7 +109,7 @@ app.delete('/users/:id', async (req, res) => {
 
 // Middleware for file upload
 app.use(fileUpload());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { redirect: false }));
 // Route for handling file uploads
 app.post('/upload', (req, res) => {
     if (req.files === null) {
