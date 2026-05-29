@@ -1,0 +1,63 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ec2
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+            APP_DIR="/opt/ecommerce/app"
+            REPO_URL="https://github.com/${{ github.repository }}.git"
+            BRANCH="${{ github.ref_name }}"
+
+            if [[ ! -d "$APP_DIR/.git" ]]; then
+              sudo mkdir -p /opt/ecommerce
+              sudo chown -R ec2-user:ec2-user /opt/ecommerce
+              git clone --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
+            fi
+
+            cd "$APP_DIR"
+            git fetch origin
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH"
+
+            if [[ -f /opt/ecommerce/.env ]]; then
+              set -a
+              # shellcheck disable=SC1091
+              source /opt/ecommerce/.env
+              set +a
+            fi
+
+            export CORS_ORIGINS="http://${{ secrets.EC2_HOST }},http://localhost"
+            docker compose -f docker-compose.aws.yml up -d --build
+            docker compose -f docker-compose.aws.yml ps
+
+      - name: Smoke test (HTTP)
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS "http://${{ secrets.EC2_HOST }}/" -o /dev/null; then
+              echo "Site is up."
+              exit 0
+            fi
+            echo "Waiting for app... ($i/6)"
+            sleep 15
+          done
+          echo "Site did not respond in time (build may still be running on EC2)."
+          exit 1

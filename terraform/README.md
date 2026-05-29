@@ -96,6 +96,10 @@ First boot can take **5–15 minutes** (Docker pull + `npm ci` + MySQL init).
 - **Terraform AccessDenied**: refresh lab credentials; ensure you are not creating IAM resources in other modules.
 - **Stop resources** when finished: `terraform destroy` and terminate stray resources in the EC2 console.
 
+## GitHub Actions (CI/CD)
+
+After EC2 is running, configure deploy secrets and push to `main` / `master`. See **[.github/DEPLOY.md](../.github/DEPLOY.md)**.
+
 ## Optional: auto-clone on boot
 
 Set in `terraform.tfvars`:

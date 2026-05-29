@@ -66,6 +66,8 @@ Quick summary:
 
 Production compose: `docker-compose.aws.yml` (port 80 only).
 
+**GitHub Actions:** push to `main`/`master` to deploy via SSH — see [.github/DEPLOY.md](./.github/DEPLOY.md).
+
 ---
 
 ## Prerequisites
