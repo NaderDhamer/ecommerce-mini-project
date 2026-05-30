@@ -2,6 +2,8 @@
 
 Configures the EC2 instance created by `terraform/` and deploys the app with **git** + `docker-compose.aws.yml`.
 
+Variables live in `inventory/group_vars/all.yml` (loaded when using `inventory/ci.yml` or `inventory/hosts.yml`).
+
 ## What runs where
 
 | Step | Tool |

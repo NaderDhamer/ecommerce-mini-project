@@ -1,0 +1,6 @@
+---
+app_root: /opt/ecommerce/app
+ecommerce_env_dir: /opt/ecommerce
+github_repo_url: ""
+deploy_branch: main
+db_password: "{{ lookup('env', 'DB_PASSWORD') | default('ChangeMeInLearnerLab123!', true) }}"
