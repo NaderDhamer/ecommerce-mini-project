@@ -34,7 +34,7 @@ variable "ssh_cidr" {
 }
 
 variable "github_repo_url" {
-  description = "Optional public Git URL to clone on first boot. Leave empty to deploy manually over SSH."
+  description = "Deprecated: app deploy uses Ansible (GitHub Actions or scripts/ansible-deploy.sh). Unused by Terraform."
   type        = string
   default     = ""
 }

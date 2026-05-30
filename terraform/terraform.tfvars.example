@@ -11,7 +11,6 @@ key_name = "your-learner-lab-key"
 # Restrict SSH to your IP (recommended): "203.0.113.10/32"
 ssh_cidr = "0.0.0.0/0"
 
-# Optional: public repo to auto-deploy on first boot
-# github_repo_url = "https://github.com/your-org/Ecommerce-mini-project.git"
+# Deploy app with Ansible / GitHub Actions (see ansible/README.md and .github/DEPLOY.md)
 
 db_password = "ChangeMeInLearnerLab123!"

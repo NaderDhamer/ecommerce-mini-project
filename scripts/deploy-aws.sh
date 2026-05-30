@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Legacy tar-over-SSH deploy. Prefer: ./scripts/ansible-deploy.sh (git + Ansible).
 # Deploy application code to the EC2 instance created by terraform/
 set -euo pipefail
 

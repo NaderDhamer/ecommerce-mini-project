@@ -1,0 +1,13 @@
+---
+- name: Configure and deploy ecommerce on EC2
+  hosts: all
+  gather_facts: true
+
+  pre_tasks:
+    - name: Wait for SSH
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+
+  roles:
+    - role: common
+    - role: app

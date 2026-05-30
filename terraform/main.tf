@@ -70,10 +70,7 @@ resource "aws_instance" "app" {
   subnet_id              = data.aws_subnets.app.ids[0]
   availability_zone      = var.availability_zone
 
-  user_data = templatefile("${path.module}/user_data.sh.tpl", {
-    github_repo_url = var.github_repo_url
-    db_password     = var.db_password
-  })
+  user_data = file("${path.module}/user_data.sh.tpl")
 
   root_block_device {
     volume_size = var.root_volume_gb

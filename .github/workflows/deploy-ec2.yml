@@ -12,42 +12,49 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
-          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          command_timeout: 30m
-          script: |
-            set -euo pipefail
-            APP_DIR="/opt/ecommerce/app"
-            REPO_URL="https://github.com/${{ github.repository }}.git"
-            BRANCH="${{ github.ref_name }}"
+          python-version: "3.12"
 
-            if [[ ! -d "$APP_DIR/.git" ]]; then
-              sudo mkdir -p /opt/ecommerce
-              sudo chown -R ec2-user:ec2-user /opt/ecommerce
-              git clone --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
-            fi
+      - name: Install Ansible
+        run: pip install ansible
 
-            cd "$APP_DIR"
-            git fetch origin
-            git checkout "$BRANCH"
-            git pull origin "$BRANCH"
+      - name: Configure SSH key
+        run: |
+          install -m 600 /dev/null /tmp/ec2_key.pem
+          printf '%s\n' "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > /tmp/ec2_key.pem
 
-            if [[ -f /opt/ecommerce/.env ]]; then
-              set -a
-              # shellcheck disable=SC1091
-              source /opt/ecommerce/.env
-              set +a
-            fi
+      - name: Write Ansible inventory
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          USER="${EC2_USER:-ec2-user}"
+          {
+            echo "all:"
+            echo "  hosts:"
+            echo "    ecommerce:"
+            echo "      ansible_host: ${EC2_HOST}"
+            echo "      ansible_user: ${USER}"
+          } > ansible/inventory/ci.yml
 
-            export CORS_ORIGINS="http://${{ secrets.EC2_HOST }},http://localhost"
-            docker compose -f docker-compose.aws.yml up -d --build
-            docker compose -f docker-compose.aws.yml ps
+      - name: Deploy with Ansible (git + docker compose)
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          ansible-playbook ansible/playbooks/site.yml \
+            -i ansible/inventory/ci.yml \
+            --private-key /tmp/ec2_key.pem \
+            -e "github_repo_url=https://github.com/${{ github.repository }}.git" \
+            -e "deploy_branch=${{ github.ref_name }}"
 
       - name: Smoke test (HTTP)
         run: |

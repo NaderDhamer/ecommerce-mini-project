@@ -61,12 +61,12 @@ Quick summary:
 1. Export Learner Lab CLI credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`).
 2. Create an EC2 key pair in the lab console.
 3. `cd terraform && cp terraform.tfvars.example terraform.tfvars` → edit `key_name` → `terraform init && terraform apply`.
-4. Deploy the app: `./scripts/deploy-aws.sh -i your-key.pem` or set `github_repo_url` in tfvars.
+4. Deploy the app: push to `main`/`master` (Ansible via GitHub Actions) or `./scripts/ansible-deploy.sh -i your-key.pem -r https://github.com/YOU/REPO.git`.
 5. Open `http://<public_ip>/`.
 
 Production compose: `docker-compose.aws.yml` (port 80 only).
 
-**GitHub Actions:** push to `main`/`master` to deploy via SSH — see [.github/DEPLOY.md](./.github/DEPLOY.md).
+**GitHub Actions:** Ansible deploy on push — see [.github/DEPLOY.md](./.github/DEPLOY.md) and [ansible/README.md](./ansible/README.md).
 
 ---
 

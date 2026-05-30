@@ -1,0 +1,12 @@
+---
+ecommerce_env_dir: /opt/ecommerce
+app_root: /opt/ecommerce/app
+
+# Override on CLI or in CI, e.g. -e github_repo_url=https://github.com/org/repo.git
+github_repo_url: ""
+deploy_branch: main
+
+# From environment (GitHub secret DB_PASSWORD) or -e db_password=...
+db_password: "{{ lookup('env', 'DB_PASSWORD') | default('ChangeMeInLearnerLab123!', true) }}"
+
+docker_compose_version: "v2.24.5"

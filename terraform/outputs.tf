@@ -19,6 +19,6 @@ output "ssh_command" {
 }
 
 output "deploy_hint" {
-  description = "Manual deploy if github_repo_url was empty"
-  value       = "scp -r project ec2-user@${aws_instance.app.public_ip}:/opt/ecommerce/app && ssh ec2-user@${aws_instance.app.public_ip} 'cd /opt/ecommerce/app && docker compose -f docker-compose.aws.yml up -d --build'"
+  description = "Deploy with Ansible (git) after apply"
+  value       = "./scripts/ansible-deploy.sh -i <your-key.pem> -r https://github.com/YOUR_USER/Ecommerce-mini-project.git -h ${aws_instance.app.public_ip}"
 }

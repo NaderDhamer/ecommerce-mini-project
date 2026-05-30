@@ -59,28 +59,19 @@ terraform apply
 
 Note the outputs: `website_url`, `public_ip`, `ssh_command`.
 
-## Deploy application (if `github_repo_url` is empty)
+## Deploy application (Ansible + git)
 
-From the project root on your machine:
+After `terraform apply`, deploy with **Ansible** (installs Docker, clones the repo, starts compose):
 
 ```bash
-export EC2_IP="$(cd terraform && terraform output -raw public_ip)"
-scp -i ~/.ssh/your-key.pem -r . ec2-user@"$EC2_IP":/opt/ecommerce/app
-ssh -i ~/.ssh/your-key.pem ec2-user@"$EC2_IP" <<'REMOTE'
-cd /opt/ecommerce/app
 export DB_PASSWORD='YourDbPasswordFromTfvars'
-export CORS_ORIGINS="http://$(curl -fsS http://169.254.169.254/latest/meta-data/public-ipv4)"
-docker compose -f docker-compose.aws.yml up -d --build
-REMOTE
+./scripts/ansible-deploy.sh -i ~/.ssh/your-key.pem \
+  -r "https://github.com/YOUR_USER/Ecommerce-mini-project.git"
 ```
 
-Or use the helper script:
+Or push to `main`/`master` and let **GitHub Actions** run the same playbook — see [.github/DEPLOY.md](../.github/DEPLOY.md) (secrets: `EC2_HOST`, `EC2_SSH_PRIVATE_KEY`, `DB_PASSWORD`).
 
-```bash
-./scripts/deploy-aws.sh -i ~/.ssh/your-key.pem
-```
-
-First boot can take **5–15 minutes** (Docker pull + `npm ci` + MySQL init).
+First deploy can take **10–20 minutes** (Docker pull + builds + MySQL init).
 
 ## Verify
 
@@ -99,16 +90,6 @@ First boot can take **5–15 minutes** (Docker pull + `npm ci` + MySQL init).
 ## GitHub Actions (CI/CD)
 
 After EC2 is running, configure deploy secrets and push to `main` / `master`. See **[.github/DEPLOY.md](../.github/DEPLOY.md)**.
-
-## Optional: auto-clone on boot
-
-Set in `terraform.tfvars`:
-
-```hcl
-github_repo_url = "https://github.com/YOUR_USER/Ecommerce-mini-project.git"
-```
-
-The repo must be **public**, or use manual `scp` deploy.
 
 ## Starting over (full reset)
 
@@ -130,12 +111,9 @@ The repo must be **public**, or use manual `scp` deploy.
    ```
    Note the new `public_ip`.
 
-5. **Update GitHub secret** `EC2_HOST` to the new IP (and `EC2_SSH_PRIVATE_KEY` if you created a new key).
+5. **Update GitHub secrets** `EC2_HOST` (and `EC2_SSH_PRIVATE_KEY` if you created a new key).
 
-6. **Deploy the app** — pick one:
-   - Wait for `github_repo_url` on first boot (~10–20 min), or
-   - **Actions → Deploy to EC2 → Run workflow**, or
-   - `./scripts/deploy-aws.sh -i ~/.ssh/your-key.pem`
+6. **Deploy the app** — **Actions → Deploy to EC2 → Run workflow**, or `./scripts/ansible-deploy.sh` (see above).
 
 7. Open `http://<new-public-ip>/`.
 
@@ -146,7 +124,8 @@ Local Terraform state stays in `terraform/`; you do not need to delete it unless
 | Path | Purpose |
 |------|---------|
 | `terraform/main.tf` | EC2, security group, default VPC |
-| `terraform/user_data.sh.tpl` | Installs Docker + optional git clone |
+| `terraform/user_data.sh.tpl` | Minimal bootstrap (`/opt/ecommerce`) |
+| `ansible/` | Docker + git deploy + compose (CI and manual) |
 | `docker-compose.aws.yml` | Production compose |
 | `nginx/nginx.aws.conf` | Reverse proxy `/` and `/api` |
 | `frontend/Dockerfile.prod` | React production build |
