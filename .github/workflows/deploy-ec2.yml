@@ -46,12 +46,13 @@ jobs:
           } > ansible/inventory/ci.yml
 
       - name: Deploy with Ansible (git + docker compose)
+        working-directory: ansible
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
-          ansible-playbook ansible/playbooks/site.yml \
-            -i ansible/inventory/ci.yml \
+          ansible-playbook playbooks/site.yml \
+            -i inventory/ci.yml \
             --private-key /tmp/ec2_key.pem \
             -e "github_repo_url=https://github.com/${{ github.repository }}.git" \
             -e "deploy_branch=${{ github.ref_name }}"

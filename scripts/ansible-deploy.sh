@@ -51,6 +51,7 @@ all:
 EOF
 
 export ANSIBLE_HOST_KEY_CHECKING="${ANSIBLE_HOST_KEY_CHECKING:-False}"
+export ANSIBLE_CONFIG="${ROOT}/ansible/ansible.cfg"
 
 ansible-playbook "$ROOT/ansible/playbooks/site.yml" \
   -i "$INVENTORY" \
